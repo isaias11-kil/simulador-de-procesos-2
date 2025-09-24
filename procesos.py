@@ -21,9 +21,9 @@ class Proceso:
         self.ejecutado = False
 
     def __repr__(self):
-        return (f"Proceso(pid={self.pid}, nombre='{self.nombre}', "
-                f"tiempo_cpu={{self.tiempo_cpu}}, llegada={{self.instante_llegada}}, "
-                f"quantum={{self.quantum}})")
+            return (f"Proceso(pid={self.pid}, nombre='{self.nombre}', "
+            f"tiempo_cpu={self.tiempo_cpu}, llegada={self.instante_llegada}, "
+            f"quantum={self.quantum})")
 
 def crear_proceso(nombre, tiempo_cpu, instante_llegada, quantum=None):
     if not nombre or not isinstance(nombre, str):
