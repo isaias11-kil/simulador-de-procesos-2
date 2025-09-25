@@ -162,3 +162,4 @@ def ejecutar_simulacion(procesos, algoritmo, text_widget):
     thread.daemon = True
     thread.start()
 
+
