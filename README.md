@@ -119,7 +119,10 @@ El historial muestra cada proceso ejecutado, con detalles como PID, nombre, algo
 
 ## Exportar Resultados
 
-Puedes exportar tanto el historial como los resultados de la simulación a archivos `.txt` para su análisis o respaldo.
+Puedes exportar tanto el historial como los resultados de la simulación a archivos `.txt` para su análisis o respaldo, unicamente debes presionar el boton Exportar Resultado o Exportar Historial y lueog deberas guardar el archivo en la ruta que deseas.
+
+<img width="600" height="146" alt="image" src="https://github.com/user-attachments/assets/75a488c3-4c97-4722-907a-ea6b6585b756" />
+
 
 ---
 
