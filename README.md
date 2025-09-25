@@ -121,7 +121,7 @@ Puedes exportar tanto el historial como los resultados de la simulación a archi
 
 ## Créditos
 
-Desarrollado por [Tu Nombre o Equipo].  
-Basado en prácticas de simulación de sistemas operativos.
+Desarrollado por Grupo #7 |Sistemas Operativos|  
+
 
 ---
