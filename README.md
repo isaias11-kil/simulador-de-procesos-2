@@ -69,16 +69,19 @@ python main.py
 1. **Ejecuta `main.py`**  
    Se abrirá la ventana principal del simulador.
 
-2. **Agrega procesos**  
+   <img width="1751" height="985" alt="simulador" src="https://github.com/user-attachments/assets/f05e447e-d1cd-4855-b892-7dc0b54c1f18" />
+
+
+3. **Agrega procesos**  
    Completa los campos y presiona "Agregar Proceso". Los procesos aparecerán en la tabla.
 
-3. **Selecciona el algoritmo**  
+4. **Selecciona el algoritmo**  
    Elige el algoritmo de planificación en el menú desplegable.
 
-4. **Inicia la simulación**  
+5. **Inicia la simulación**  
    Presiona "🎯 Iniciar Simulación". Observa la ejecución y el historial en tiempo real.
 
-5. **Exporta resultados o historial**  
+6. **Exporta resultados o historial**  
    Usa los botones correspondientes para guardar la información en archivos de texto.
 
 ---
