@@ -111,7 +111,7 @@ python main.py
 
 El historial muestra cada proceso ejecutado, con detalles como PID, nombre, algoritmo, tiempos y estado. Se actualiza automáticamente conforme los procesos finalizan.
 
-<img width="407" height="587" alt="image" src="https://github.com/user-attachments/assets/b9e9f595-1090-47d7-b4d2-2e8a772cb2eb" />
+<img width="350" height="450" alt="image" src="https://github.com/user-attachments/assets/b9e9f595-1090-47d7-b4d2-2e8a772cb2eb" />
 
 
 
