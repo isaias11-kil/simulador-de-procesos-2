@@ -11,28 +11,28 @@ class HistorialUI(ttk.Frame):
         self.crear_widgets()
     
     def crear_widgets(self):
-        # Frame principal del historial
+        
         self.frame = ttk.LabelFrame(self, text="📊 Historial de Simulaciones")
         self.frame.pack(fill="both", expand=True, padx=5, pady=5)
         
-        # Contador de simulaciones
+        
         self.label_contador = ttk.Label(self.frame, text="Simulaciones realizadas: 0")
         self.label_contador.pack(padx=5, pady=5, anchor="w")
         
-        # Frame para lista y scrollbar
+        
         list_frame = ttk.Frame(self.frame)
         list_frame.pack(fill="both", expand=True, padx=5, pady=5)
         
-        # Lista del historial
+
         self.lista_historial = tk.Listbox(list_frame, height=15, font=("Arial", 10))
         self.lista_historial.pack(side="left", fill="both", expand=True)
         
-        # Scrollbar para la lista
+     
         scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.lista_historial.yview)
         scrollbar.pack(side="right", fill="y")
         self.lista_historial.config(yscrollcommand=scrollbar.set)
         
-        # Botones de control del historial
+ 
         button_frame = ttk.Frame(self.frame)
         button_frame.pack(fill="x", padx=5, pady=5)
         
@@ -48,7 +48,7 @@ class HistorialUI(ttk.Frame):
         entrada = f"{self.contador_simulaciones:02d}. [{timestamp}] {descripcion}"
         
         self.lista_historial.insert(tk.END, entrada)
-        self.lista_historial.see(tk.END)  # Auto-scroll al final
+        self.lista_historial.see(tk.END)  
         self.actualizar_contador()
     
     def limpiar_historial(self):
@@ -88,3 +88,4 @@ class HistorialUI(ttk.Frame):
     def actualizar_contador(self):
         """Actualiza el contador de simulaciones"""
         self.label_contador.config(text=f"Simulaciones realizadas: {self.contador_simulaciones}")
+
