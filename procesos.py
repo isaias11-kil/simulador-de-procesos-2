@@ -37,3 +37,4 @@ def crear_proceso(nombre, tiempo_cpu, instante_llegada, quantum=None):
     
     return Proceso(nombre, tiempo_cpu, instante_llegada, quantum)
 
+
