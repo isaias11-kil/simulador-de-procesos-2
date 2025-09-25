@@ -1,4 +1,4 @@
- # algoritmos.py
+# algoritmos.py
 from typing import List, Dict, Tuple
 from procesos import Proceso
 import heapq
@@ -52,48 +52,39 @@ class FCFS(AlgoritmoPlanificacion):
     """First Come First Served (FIFO) - No apropiativo"""
     
     def __init__(self):
-        super().__init__("FCFS", "First Come First Served - No apropiativo")
+        super().__init__("FCFS", "First Come First Served")
     
-    def ejecutar(self, procesos: List[Proceso]) -> List[Dict]:
-        """Ejecuta el algoritmo FCFS"""
-        self.tiempo_actual = 0
+    def ejecutar(self, procesos: List[Proceso], on_proceso_finalizado=None) -> List[Dict]:
         eventos = []
-        
-        
         procesos_ordenados = sorted(procesos, key=lambda x: x.instante_llegada)
-        
+        tiempo_actual = 0
+
         for proceso in procesos_ordenados:
-           
-            if self.tiempo_actual < proceso.instante_llegada:
-                self.tiempo_actual = proceso.instante_llegada
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': f"Proceso {proceso.nombre} llega al sistema"
-                })
-            
-            
-            if not proceso.ejecutado:
-                proceso.tiempo_respuesta = self.tiempo_actual - proceso.instante_llegada
-                proceso.ejecutado = True
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': f"Inicia ejecución de {proceso.nombre} (PID: {proceso.pid})"
-                })
-            
-   
-            inicio_ejecucion = self.tiempo_actual
-            self.tiempo_actual += proceso.tiempo_cpu
-            proceso.tiempo_restante = 0
-            proceso.tiempo_finalizacion = self.tiempo_actual
-            
-          
-            proceso.tiempo_espera = inicio_ejecucion - proceso.instante_llegada
-            
-            eventos.append({
-                'tiempo': self.tiempo_actual,
-                'evento': f"Finaliza {proceso.nombre} | Espera: {proceso.tiempo_espera}"
-            })
-        
+            if tiempo_actual < proceso.instante_llegada:
+                tiempo_actual = proceso.instante_llegada
+            proceso.tiempo_espera = tiempo_actual - proceso.instante_llegada
+            proceso.tiempo_respuesta = proceso.tiempo_espera
+            tiempo_actual += proceso.tiempo_cpu
+            proceso.tiempo_finalizacion = tiempo_actual
+            proceso.ejecutado = True
+
+            evento = {
+                "pid": proceso.pid,
+                "nombre": proceso.nombre,
+                "inicio": tiempo_actual - proceso.tiempo_cpu,
+                "fin": proceso.tiempo_finalizacion,
+                "algoritmo": self.nombre
+            }
+            eventos.append(evento)
+
+            if on_proceso_finalizado:
+                info = (f"PID {proceso.pid} - {proceso.nombre} "
+                        f"finalizado | Algoritmo: {self.nombre} | "
+                        f"Llegada: {proceso.instante_llegada} | "
+                        f"CPU: {proceso.tiempo_cpu} | "
+                        f"Finalización: {proceso.tiempo_finalizacion}")
+                on_proceso_finalizado(info)
+
         self.metricas = self.calcular_metricas(procesos)
         return eventos
 
@@ -101,275 +92,157 @@ class SJF(AlgoritmoPlanificacion):
     """Shortest Job First (No apropiativo)"""
     
     def __init__(self):
-        super().__init__("SJF", "Shortest Job First - No apropiativo")
+        super().__init__("SJF", "Shortest Job First")
     
-    def ejecutar(self, procesos: List[Proceso]) -> List[Dict]:
-        """Ejecuta el algoritmo SJF no apropiativo"""
-        self.tiempo_actual = 0
+    def ejecutar(self, procesos: List[Proceso], on_proceso_finalizado=None) -> List[Dict]:
         eventos = []
-        completados = []
-        cola_espera = []
-        
-      
-        procesos_restantes = sorted(procesos, key=lambda x: x.instante_llegada)
-        
-        while len(completados) < len(procesos):
-           
-            llegados = [p for p in procesos_restantes 
-                       if p.instante_llegada <= self.tiempo_actual and p not in completados]
-            
-            for p in llegados:
-                if p not in cola_espera:
-                    cola_espera.append(p)
-                    eventos.append({
-                        'tiempo': self.tiempo_actual,
-                        'evento': f"{p.nombre} llega a cola de espera"
-                    })
-            
-            if cola_espera:
-            
-                cola_espera.sort(key=lambda x: x.tiempo_cpu)
-                proceso_actual = cola_espera.pop(0)
-                
-           
-                if not proceso_actual.ejecutado:
-                    proceso_actual.tiempo_respuesta = self.tiempo_actual - proceso_actual.instante_llegada
-                    proceso_actual.ejecutado = True
-                
-                inicio_ejecucion = self.tiempo_actual
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': f"SJF selecciona {proceso_actual.nombre} (CPU: {proceso_actual.tiempo_cpu})"
-                })
-                
-           
-                self.tiempo_actual += proceso_actual.tiempo_cpu
-                proceso_actual.tiempo_restante = 0
-                proceso_actual.tiempo_finalizacion = self.tiempo_actual
-                proceso_actual.tiempo_espera = inicio_ejecucion - proceso_actual.instante_llegada
-                
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': f"Finaliza {proceso_actual.nombre} | Espera: {proceso_actual.tiempo_espera}"
-                })
-                
-                completados.append(proceso_actual)
-                procesos_restantes.remove(proceso_actual)
-            else:
-              
-                self.tiempo_actual += 1
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': "CPU idle - Esperando procesos"
-                })
-        
-        self.metricas = self.calcular_metricas(procesos)
+        procesos_ordenados = sorted(procesos, key=lambda x: (x.instante_llegada, x.tiempo_cpu))
+        tiempo_actual = 0
+        cola = procesos_ordenados.copy()
+        ejecutados = []
+
+        while cola:
+            disponibles = [p for p in cola if p.instante_llegada <= tiempo_actual]
+            if not disponibles:
+                tiempo_actual = cola[0].instante_llegada
+                disponibles = [cola[0]]
+            proceso = min(disponibles, key=lambda x: x.tiempo_cpu)
+            cola.remove(proceso)
+            proceso.tiempo_espera = max(0, tiempo_actual - proceso.instante_llegada)
+            proceso.tiempo_respuesta = proceso.tiempo_espera
+            tiempo_actual += proceso.tiempo_cpu
+            proceso.tiempo_finalizacion = tiempo_actual
+            proceso.ejecutado = True
+            ejecutados.append(proceso)
+
+            evento = {
+                "pid": proceso.pid,
+                "nombre": proceso.nombre,
+                "inicio": tiempo_actual - proceso.tiempo_cpu,
+                "fin": proceso.tiempo_finalizacion,
+                "algoritmo": self.nombre
+            }
+            eventos.append(evento)
+
+            if on_proceso_finalizado:
+                info = (f"PID {proceso.pid} - {proceso.nombre} "
+                        f"finalizado | Algoritmo: {self.nombre} | "
+                        f"Llegada: {proceso.instante_llegada} | "
+                        f"CPU: {proceso.tiempo_cpu} | "
+                        f"Finalización: {proceso.tiempo_finalizacion}")
+                on_proceso_finalizado(info)
+
+        self.metricas = self.calcular_metricas(ejecutados)
         return eventos
 
 class SRTF(AlgoritmoPlanificacion):
     """Shortest Remaining Time First (Apropiativo)"""
     
     def __init__(self):
-        super().__init__("SRTF", "Shortest Remaining Time First - Apropiativo")
+        super().__init__("SRTF", "Shortest Remaining Time First")
     
-    def ejecutar(self, procesos: List[Proceso]) -> List[Dict]:
-        """Ejecuta el algoritmo SRTF"""
-        self.tiempo_actual = 0
+    def ejecutar(self, procesos: List[Proceso], on_proceso_finalizado=None) -> List[Dict]:
         eventos = []
-        
+        procesos_copia = [Proceso(p.nombre, p.tiempo_cpu, p.instante_llegada) for p in procesos]
+        tiempo_actual = 0
+        completados = 0
+        n = len(procesos_copia)
+        while completados < n:
+            disponibles = [p for p in procesos_copia if p.instante_llegada <= tiempo_actual and p.tiempo_restante > 0]
+            if disponibles:
+                proceso = min(disponibles, key=lambda x: x.tiempo_restante)
+                if proceso.tiempo_respuesta is None:
+                    proceso.tiempo_respuesta = tiempo_actual - proceso.instante_llegada
+                proceso.tiempo_restante -= 1
+                tiempo_actual += 1
+                if proceso.tiempo_restante == 0:
+                    proceso.tiempo_finalizacion = tiempo_actual
+                    proceso.tiempo_espera = proceso.tiempo_finalizacion - proceso.instante_llegada - proceso.tiempo_cpu
+                    proceso.ejecutado = True
+                    completados += 1
 
-        for p in procesos:
-            p.tiempo_restante = p.tiempo_cpu
-            p.ejecutado = False
-        
-        completados = []
-        proceso_actual = None
-        tiempo_inicio_ejecucion = 0
-        
-        while len(completados) < len(procesos):
-    
-            nuevos = [p for p in procesos 
-                     if p.instante_llegada == self.tiempo_actual and p not in completados]
-            
-            for p in nuevos:
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': f"{p.nombre} llega al sistema"
-                })
-            
-           
-            procesos_listos = [p for p in procesos 
-                             if p.instante_llegada <= self.tiempo_actual 
-                             and p.tiempo_restante > 0 
-                             and p not in completados]
-            
-            if procesos_listos:
-               
-                procesos_listos.sort(key=lambda x: x.tiempo_restante)
-                nuevo_proceso = procesos_listos[0]
-                
-                
-                if proceso_actual != nuevo_proceso:
-                    if proceso_actual is not None:
-                       
-                        tiempo_ejecutado = self.tiempo_actual - tiempo_inicio_ejecucion
-                        proceso_actual.tiempo_restante -= tiempo_ejecutado
-                        
-                        if proceso_actual.tiempo_restante <= 0:
-                            proceso_actual.tiempo_finalizacion = self.tiempo_actual
-                            completados.append(proceso_actual)
-                            eventos.append({
-                                'tiempo': self.tiempo_actual,
-                                'evento': f"Finaliza {proceso_actual.nombre}"
-                            })
-                    
-                    proceso_actual = nuevo_proceso
-                    tiempo_inicio_ejecucion = self.tiempo_actual
-                    
-                    if not proceso_actual.ejecutado:
-                        proceso_actual.tiempo_respuesta = self.tiempo_actual - proceso_actual.instante_llegada
-                        proceso_actual.ejecutado = True
-                    
-                    eventos.append({
-                        'tiempo': self.tiempo_actual,
-                        'evento': f"SRTF cambia a {proceso_actual.nombre} (Restante: {proceso_actual.tiempo_restante})"
-                    })
-                
+                    evento = {
+                        "pid": proceso.pid,
+                        "nombre": proceso.nombre,
+                        "inicio": proceso.instante_llegada,
+                        "fin": proceso.tiempo_finalizacion,
+                        "algoritmo": self.nombre
+                    }
+                    eventos.append(evento)
 
-                self.tiempo_actual += 1
-                
+                    if on_proceso_finalizado:
+                        info = (f"PID {proceso.pid} - {proceso.nombre} "
+                                f"finalizado | Algoritmo: {self.nombre} | "
+                                f"Llegada: {proceso.instante_llegada} | "
+                                f"CPU: {proceso.tiempo_cpu} | "
+                                f"Finalización: {proceso.tiempo_finalizacion}")
+                        on_proceso_finalizado(info)
             else:
-        
-                proceso_actual = None
-                self.tiempo_actual += 1
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': "CPU idle"
-                })
-        
+                tiempo_actual += 1
 
-        for p in procesos:
-            p.tiempo_espera = p.tiempo_finalizacion - p.instante_llegada - p.tiempo_cpu
-        
-        self.metricas = self.calcular_metricas(procesos)
+        self.metricas = self.calcular_metricas(procesos_copia)
         return eventos
 
 class RoundRobin(AlgoritmoPlanificacion):
     """Round Robin con quantum configurable"""
     
     def __init__(self, quantum: int = 2):
-        super().__init__("Round Robin", f"Round Robin con quantum={quantum}")
+        super().__init__("Round Robin", f"Quantum={quantum}")
         self.quantum = quantum
     
-    def ejecutar(self, procesos: List[Proceso]) -> List[Dict]:
-        """Ejecuta el algoritmo Round Robin"""
-        self.tiempo_actual = 0
+    def ejecutar(self, procesos: List[Proceso], on_proceso_finalizado=None) -> List[Dict]:
         eventos = []
-        
-    
-        for p in procesos:
-            p.tiempo_restante = p.tiempo_cpu
-            p.ejecutado = False
-        
-     
+        procesos_copia = [Proceso(p.nombre, p.tiempo_cpu, p.instante_llegada, self.quantum) for p in procesos]
+        tiempo_actual = 0
         cola = []
-        completados = []
-        
-        
-        procesos_por_llegada = sorted(procesos, key=lambda x: x.instante_llegada)
-        indice_proximo = 0
-        
-        while len(completados) < len(procesos):
-          
-            while (indice_proximo < len(procesos_por_llegada) and 
-                   procesos_por_llegada[indice_proximo].instante_llegada <= self.tiempo_actual):
-                proceso = procesos_por_llegada[indice_proximo]
-                cola.append(proceso)
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': f"{proceso.nombre} se agrega a cola RR"
-                })
-                indice_proximo += 1
-            
+        completados = 0
+        n = len(procesos_copia)
+        llegada_idx = 0
+
+        while completados < n:
+            while llegada_idx < n and procesos_copia[llegada_idx].instante_llegada <= tiempo_actual:
+                cola.append(procesos_copia[llegada_idx])
+                llegada_idx += 1
             if cola:
-                proceso_actual = cola.pop(0)
-                
-                
-                if not proceso_actual.ejecutado:
-                    proceso_actual.tiempo_respuesta = self.tiempo_actual - proceso_actual.instante_llegada
-                    proceso_actual.ejecutado = True
-                    eventos.append({
-                        'tiempo': self.tiempo_actual,
-                        'evento': f"RR inicia {proceso_actual.nombre} (Quantum: {self.quantum})"
-                    })
-                
-               
-                tiempo_ejecucion = min(self.quantum, proceso_actual.tiempo_restante)
-                inicio_bloque = self.tiempo_actual
-                
-                for i in range(tiempo_ejecucion):
-                    self.tiempo_actual += 1
-                    proceso_actual.tiempo_restante -= 1
-                    
-                  
-                    while (indice_proximo < len(procesos_por_llegada) and 
-                           procesos_por_llegada[indice_proximo].instante_llegada <= self.tiempo_actual):
-                        nuevo = procesos_por_llegada[indice_proximo]
-                        cola.append(nuevo)
-                        eventos.append({
-                            'tiempo': self.tiempo_actual,
-                            'evento': f"{nuevo.nombre} llega durante ejecución"
-                        })
-                        indice_proximo += 1
-                
-                if proceso_actual.tiempo_restante > 0:
-                 
-                    cola.append(proceso_actual)
-                    eventos.append({
-                        'tiempo': self.tiempo_actual,
-                        'evento': f"{proceso_actual.nombre} vuelve a cola ({proceso_actual.tiempo_restante} restante)"
-                    })
+                proceso = cola.pop(0)
+                if proceso.tiempo_respuesta is None:
+                    proceso.tiempo_respuesta = tiempo_actual - proceso.instante_llegada
+                ejecucion = min(self.quantum, proceso.tiempo_restante)
+                proceso.tiempo_restante -= ejecucion
+                tiempo_actual += ejecucion
+                while llegada_idx < n and procesos_copia[llegada_idx].instante_llegada <= tiempo_actual:
+                    cola.append(procesos_copia[llegada_idx])
+                    llegada_idx += 1
+                if proceso.tiempo_restante == 0:
+                    proceso.tiempo_finalizacion = tiempo_actual
+                    proceso.tiempo_espera = proceso.tiempo_finalizacion - proceso.instante_llegada - proceso.tiempo_cpu
+                    proceso.ejecutado = True
+                    completados += 1
+
+                    evento = {
+                        "pid": proceso.pid,
+                        "nombre": proceso.nombre,
+                        "inicio": proceso.instante_llegada,
+                        "fin": proceso.tiempo_finalizacion,
+                        "algoritmo": self.nombre
+                    }
+                    eventos.append(evento)
+
+                    if on_proceso_finalizado:
+                        info = (f"PID {proceso.pid} - {proceso.nombre} "
+                                f"finalizado | Algoritmo: {self.nombre} | "
+                                f"Llegada: {proceso.instante_llegada} | "
+                                f"CPU: {proceso.tiempo_cpu} | "
+                                f"Finalización: {proceso.tiempo_finalizacion}")
+                        on_proceso_finalizado(info)
                 else:
-                   
-                    proceso_actual.tiempo_finalizacion = self.tiempo_actual
-                    completados.append(proceso_actual)
-                    proceso_actual.tiempo_espera = (proceso_actual.tiempo_finalizacion - 
-                                                  proceso_actual.instante_llegada - 
-                                                  proceso_actual.tiempo_cpu)
-                    eventos.append({
-                        'tiempo': self.tiempo_actual,
-                        'evento': f"✅ {proceso_actual.nombre} completado | Espera: {proceso_actual.tiempo_espera}"
-                    })
+                    cola.append(proceso)
             else:
-            
-                self.tiempo_actual += 1
-                eventos.append({
-                    'tiempo': self.tiempo_actual,
-                    'evento': "CPU idle - Cola vacía"
-                })
-        
-        self.metricas = self.calcular_metricas(procesos)
+                tiempo_actual += 1
+
+        self.metricas = self.calcular_metricas(procesos_copia)
         return eventos
 
-class Prioridades(AlgoritmoPlanificacion):
-    """Planificación por prioridades (menor número = mayor prioridad)"""
-    
-    def __init__(self, apropiativo: bool = True):
-        nombre = "Prioridades Apropiativo" if apropiativo else "Prioridades No Apropiativo"
-        super().__init__("Prioridades", nombre)
-        self.apropiativo = apropiativo
-    
-    def ejecutar(self, procesos: List[Proceso]) -> List[Dict]:
-        """Ejecuta planificación por prioridades"""
-   
-        
-        eventos = [{
-            'tiempo': 0,
-            'evento': "Algoritmo de Prioridades no implementado completamente"
-        }]
-        
-        self.metricas = self.calcular_metricas(procesos)
-        return eventos
 
 
 class FabricaAlgoritmos:
@@ -381,8 +254,8 @@ class FabricaAlgoritmos:
             "FCFS": FCFS,
             "SJF": SJF,
             "SRTF": SRTF,
-            "Round Robin": RoundRobin,
-            "Prioridades": Prioridades
+            "Round Robin": RoundRobin
+            
         }
         
         if nombre not in algoritmos:
@@ -391,15 +264,13 @@ class FabricaAlgoritmos:
         if nombre == "Round Robin":
             quantum = kwargs.get('quantum', 2)
             return RoundRobin(quantum)
-        elif nombre == "Prioridades":
-            apropiativo = kwargs.get('apropiativo', True)
-            return Prioridades(apropiativo)
+        
         else:
             return algoritmos[nombre]()
     
     @staticmethod
     def obtener_algoritmos_disponibles() -> List[str]:
-        return ["FCFS", "SJF", "SRTF", "Round Robin", "Prioridades"]
+        return ["FCFS", "SJF", "SRTF", "Round Robin"]
     
     @staticmethod
     def obtener_descripcion(algoritmo: str) -> str:
@@ -408,7 +279,7 @@ class FabricaAlgoritmos:
             "SJF": "Shortest Job First - No apropiativo",
             "SRTF": "Shortest Remaining Time First - Apropiativo",
             "Round Robin": "Round Robin - Apropiativo con quantum",
-            "Prioridades": "Planificación por prioridades"
+            
         }
         return descripciones.get(algoritmo, "Descripción no disponible")
 
