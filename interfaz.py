@@ -86,7 +86,7 @@ class InterfazSimulador(ttk.Frame):
 
         ttk.Label(frame_algo, text="Algoritmo de Planificación:").pack(anchor="w", padx=5, pady=2)
         self.algoritmo = tk.StringVar(value="FCFS")
-        opciones = ["FCFS", "SJF", "SRTF", "Round Robin", "Prioridades"]
+        opciones = ["FCFS", "SJF", "SRTF", "Round Robin"]
         self.combo_algoritmo = ttk.Combobox(frame_algo, textvariable=self.algoritmo, values=opciones, state="readonly")
         self.combo_algoritmo.pack(fill="x", padx=5, pady=5)
 
