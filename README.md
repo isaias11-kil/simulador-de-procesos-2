@@ -87,10 +87,13 @@ python main.py
 5. **Selecciona el algoritmo**  
    Elige el algoritmo de planificación en el menú desplegable.
 
-6. **Inicia la simulación**  
+   <img width="796" height="350" alt="image" src="https://github.com/user-attachments/assets/dd53f828-6a91-44b5-bcdb-e0db5e819c46" />
+
+
+7. **Inicia la simulación**  
    Presiona "🎯 Iniciar Simulación". Observa la ejecución y el historial en tiempo real.
 
-7. **Exporta resultados o historial**  
+8. **Exporta resultados o historial**  
    Usa los botones correspondientes para guardar la información en archivos de texto.
 
 ---
