@@ -1,2 +1,112 @@
-Simulador de Planificación de Procesos 
+# Simulador de Planificación de Procesos
 
+Este proyecto es un simulador visual de algoritmos de planificación de procesos en sistemas operativos. Permite crear procesos, elegir el algoritmo de planificación, ejecutar la simulación y visualizar el historial y métricas de los procesos ejecutados.
+
+---
+
+## Tabla de Contenidos
+
+- [Características](#características)
+- [Instalación](#instalación)
+- [Estructura de Archivos](#estructura-de-archivos)
+- [Uso](#uso)
+- [Algoritmos Soportados](#algoritmos-soportados)
+- [Historial de Procesos](#historial-de-procesos)
+- [Exportar Resultados](#exportar-resultados)
+- [Créditos](#créditos)
+
+---
+
+## Características
+
+- **Creación de procesos**: Agrega uno o varios procesos con nombre, tiempo de CPU, instante de llegada y quantum (si aplica).
+- **Selección de algoritmo**: Elige entre FCFS, SJF, SRTF y Round Robin.
+- **Simulación visual**: Muestra la cola de procesos y el avance de la simulación.
+- **Historial en tiempo real**: Visualiza el historial de procesos ejecutados conforme avanzan.
+- **Exportación**: Exporta historial y resultados a archivos de texto.
+- **Métricas**: Calcula y muestra métricas como turnaround, espera y respuesta.
+
+---
+
+## Instalación
+
+1. Clona el repositorio o descarga los archivos.
+2. Asegúrate de tener Python 3 instalado.
+3. Instala dependencias si es necesario (Tkinter viene por defecto en la mayoría de instalaciones de Python).
+
+```sh
+git clone <URL_DEL_REPOSITORIO>
+cd simulador-de-procesos-2-main
+python main.py
+```
+
+---
+
+## Estructura de Archivos
+
+- **main.py**  
+  Punto de entrada principal. Integra la interfaz, historial y lógica de simulación.
+
+- **interfaz.py**  
+  Interfaz gráfica para crear procesos, configurar simulación y mostrar resultados.
+
+- **procesos.py**  
+  Clase `Proceso` y función para crear procesos con atributos relevantes.
+
+- **algoritmos.py**  
+  Implementación de algoritmos de planificación (FCFS, SJF, SRTF, Round Robin) y cálculo de métricas.
+
+- **historial.py**  
+  Módulo para mostrar y exportar el historial de procesos ejecutados.
+
+- **simulacion.py**  
+  Motor de simulación alternativo para ejecución paso a paso y visualización detallada.
+
+---
+
+## Uso
+
+1. **Ejecuta `main.py`**  
+   Se abrirá la ventana principal del simulador.
+
+2. **Agrega procesos**  
+   Completa los campos y presiona "Agregar Proceso". Los procesos aparecerán en la tabla.
+
+3. **Selecciona el algoritmo**  
+   Elige el algoritmo de planificación en el menú desplegable.
+
+4. **Inicia la simulación**  
+   Presiona "🎯 Iniciar Simulación". Observa la ejecución y el historial en tiempo real.
+
+5. **Exporta resultados o historial**  
+   Usa los botones correspondientes para guardar la información en archivos de texto.
+
+---
+
+## Algoritmos Soportados
+
+- **FCFS** (First Come First Served)
+- **SJF** (Shortest Job First)
+- **SRTF** (Shortest Remaining Time First)
+- **Round Robin** (con quantum configurable)
+
+---
+
+## Historial de Procesos
+
+El historial muestra cada proceso ejecutado, con detalles como PID, nombre, algoritmo, tiempos y estado. Se actualiza automáticamente conforme los procesos finalizan.
+
+---
+
+## Exportar Resultados
+
+Puedes exportar tanto el historial como los resultados de la simulación a archivos `.txt` para su análisis o respaldo.
+
+---
+
+## Créditos
+
+Desarrollado por [Tu Nombre o Equipo].  
+Basado en prácticas de simulación de sistemas operativos.
+
+---
