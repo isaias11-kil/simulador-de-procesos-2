@@ -1,4 +1,4 @@
-# main.py
+
 from interfaz import InterfazSimulador
 from historial import HistorialUI
 from procesos import Proceso
@@ -23,24 +23,23 @@ class SimuladorAvanzado:
         self.root.configure(bg='#f0f0f0')
     
     def crear_componentes(self):
-        # Frame principal
+
         main_frame = ttk.Frame(self.root)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Historial (ahora hereda de ttk.Frame, así que usa pack directamente)
+   
         self.historial_ui = HistorialUI(main_frame)
         self.historial_ui.pack(side="right", fill="both", padx=(10, 0), pady=10)
         
-        # Interfaz principal
+
         left_frame = ttk.Frame(main_frame)
         left_frame.pack(side="left", fill="both", expand=True, padx=(0, 10), pady=10)
-        
-        # Crear callback con historial
+
         callback = self.crear_callback_simulacion()
         self.interfaz = InterfazSimulador(left_frame, callback)
         self.interfaz.pack(fill="both", expand=True)
         
-        # Barra de estado
+
         self.crear_barra_estado()
     
     def crear_callback_simulacion(self):
@@ -54,14 +53,14 @@ class SimuladorAvanzado:
             try:
                 text_widget.delete(1.0, tk.END)
                 
-                # Mostrar información inicial
+           
                 text_widget.insert(tk.END, "═" * 60 + "\n")
                 text_widget.insert(tk.END, f"           SIMULACIÓN CON ALGORITMO: {algoritmo}\n")
                 text_widget.insert(tk.END, "═" * 60 + "\n")
                 text_widget.insert(tk.END, f"Procesos a simular: {len(procesos)}\n")
                 text_widget.insert(tk.END, "─" * 60 + "\n\n")
                 
-                # Convertir a objetos Proceso
+
                 procesos_objetos = []
                 text_widget.insert(tk.END, "🔄 CREANDO PROCESOS...\n")
                 
@@ -75,25 +74,24 @@ class SimuladorAvanzado:
                     procesos_objetos.append(proceso)
                     text_widget.insert(tk.END, f"   ✅ {proceso.nombre} (PID: {proceso.pid})\n")
                 
-                # Registrar en historial
+     
                 if self.historial_ui:
                     self.historial_ui.agregar_entrada(f"{algoritmo} - {len(procesos)} procesos")
                 
-                # Crear algoritmo seleccionado
+            
                 fabrica = FabricaAlgoritmos()
                 algoritmo_obj = fabrica.crear_algoritmo(algoritmo)
                 
                 text_widget.insert(tk.END, f"\n🎯 INICIANDO {algoritmo}...\n")
                 text_widget.insert(tk.END, "─" * 50 + "\n")
                 
-                # Ejecutar simulación
                 eventos = algoritmo_obj.ejecutar(procesos_objetos)
                 
                 # Mostrar eventos
                 for evento in eventos:
                     text_widget.insert(tk.END, f"T{evento['tiempo']:3d}: {evento['evento']}\n")
                 
-                # Mostrar métricas
+               
                 text_widget.insert(tk.END, "\n📊 MÉTRICAS FINALES:\n")
                 text_widget.insert(tk.END, "─" * 40 + "\n")
                 
@@ -116,7 +114,7 @@ class SimuladorAvanzado:
                 messagebox.showerror("Error", error_msg)
                 text_widget.insert(tk.END, f"\n❌ {error_msg}\n")
         
-        # Ejecutar en hilo separado
+     
         thread = Thread(target=ejecutar)
         thread.daemon = True
         thread.start()
@@ -127,7 +125,7 @@ class SimuladorAvanzado:
                               relief="sunken", anchor="w")
         status_bar.pack(side="bottom", fill="x")
 
-# Versión simplificada alternativa si persisten los problemas
+
 class SimuladorSimplificado:
     """Versión simplificada si hay problemas con la versión avanzada"""
     
@@ -136,11 +134,11 @@ class SimuladorSimplificado:
         self.root.title("Simulador de Planificación de Procesos")
         self.root.geometry("1200x700")
         
-        # Frame principal
+
         main_frame = ttk.Frame(root)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Crear interfaz directamente
+        
         from interfaz import InterfazSimulador
         self.interfaz = InterfazSimulador(main_frame, self.simulacion_callback)
         self.interfaz.pack(fill="both", expand=True)
@@ -159,12 +157,13 @@ if __name__ == "__main__":
     root = tk.Tk()
     
     try:
-        # Intentar con la versión avanzada
+
         app = SimuladorAvanzado(root)
     except Exception as e:
         print(f"Error con SimuladorAvanzado: {e}")
         print("Usando versión simplificada...")
-        # Fallback a versión simplificada
+
         app = SimuladorSimplificado(root)
     
     root.mainloop()
+
