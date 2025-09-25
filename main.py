@@ -1,4 +1,3 @@
-
 from interfaz import InterfazSimulador
 from historial import HistorialUI
 from procesos import Proceso
@@ -27,11 +26,9 @@ class SimuladorAvanzado:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
-   
         self.historial_ui = HistorialUI(main_frame)
         self.historial_ui.pack(side="right", fill="both", padx=(10, 0), pady=10)
         
-
         left_frame = ttk.Frame(main_frame)
         left_frame.pack(side="left", fill="both", expand=True, padx=(0, 10), pady=10)
 
@@ -39,7 +36,6 @@ class SimuladorAvanzado:
         self.interfaz = InterfazSimulador(left_frame, callback)
         self.interfaz.pack(fill="both", expand=True)
         
-
         self.crear_barra_estado()
     
     def crear_callback_simulacion(self):
@@ -52,18 +48,14 @@ class SimuladorAvanzado:
         def ejecutar():
             try:
                 text_widget.delete(1.0, tk.END)
-                
-           
                 text_widget.insert(tk.END, "═" * 60 + "\n")
                 text_widget.insert(tk.END, f"           SIMULACIÓN CON ALGORITMO: {algoritmo}\n")
                 text_widget.insert(tk.END, "═" * 60 + "\n")
                 text_widget.insert(tk.END, f"Procesos a simular: {len(procesos)}\n")
                 text_widget.insert(tk.END, "─" * 60 + "\n\n")
-                
 
                 procesos_objetos = []
                 text_widget.insert(tk.END, "🔄 CREANDO PROCESOS...\n")
-                
                 for i, p_dict in enumerate(procesos, 1):
                     proceso = Proceso(
                         p_dict["Nombre"],
@@ -74,24 +66,24 @@ class SimuladorAvanzado:
                     procesos_objetos.append(proceso)
                     text_widget.insert(tk.END, f"   ✅ {proceso.nombre} (PID: {proceso.pid})\n")
                 
-     
-                if self.historial_ui:
-                    self.historial_ui.agregar_entrada(f"{algoritmo} - {len(procesos)} procesos")
-                
-            
+                # Real-time historial update function
+                def actualizar_historial(info):
+                    if self.historial_ui:
+                        self.historial_ui.agregar_entrada(info)
+
                 fabrica = FabricaAlgoritmos()
                 algoritmo_obj = fabrica.crear_algoritmo(algoritmo)
                 
                 text_widget.insert(tk.END, f"\n🎯 INICIANDO {algoritmo}...\n")
                 text_widget.insert(tk.END, "─" * 50 + "\n")
                 
-                eventos = algoritmo_obj.ejecutar(procesos_objetos)
+                # Pass the callback to the algorithm
+                eventos = algoritmo_obj.ejecutar(procesos_objetos, on_proceso_finalizado=actualizar_historial)
                 
                 # Mostrar eventos
                 for evento in eventos:
-                    text_widget.insert(tk.END, f"T{evento['tiempo']:3d}: {evento['evento']}\n")
+                    text_widget.insert(tk.END, f"T{evento.get('inicio', 0):3d}-{evento.get('fin', 0):3d}: {evento['nombre']} finalizado\n")
                 
-               
                 text_widget.insert(tk.END, "\n📊 MÉTRICAS FINALES:\n")
                 text_widget.insert(tk.END, "─" * 40 + "\n")
                 
@@ -114,7 +106,6 @@ class SimuladorAvanzado:
                 messagebox.showerror("Error", error_msg)
                 text_widget.insert(tk.END, f"\n❌ {error_msg}\n")
         
-     
         thread = Thread(target=ejecutar)
         thread.daemon = True
         thread.start()
@@ -134,10 +125,8 @@ class SimuladorSimplificado:
         self.root.title("Simulador de Planificación de Procesos")
         self.root.geometry("1200x700")
         
-
         main_frame = ttk.Frame(root)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
-        
         
         from interfaz import InterfazSimulador
         self.interfaz = InterfazSimulador(main_frame, self.simulacion_callback)
@@ -155,9 +144,8 @@ class SimuladorSimplificado:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    
-    try:
 
+    try:
         app = SimuladorAvanzado(root)
     except Exception as e:
         print(f"Error con SimuladorAvanzado: {e}")
@@ -166,4 +154,3 @@ if __name__ == "__main__":
         app = SimuladorSimplificado(root)
     
     root.mainloop()
-
