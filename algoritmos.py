@@ -59,11 +59,11 @@ class FCFS(AlgoritmoPlanificacion):
         self.tiempo_actual = 0
         eventos = []
         
-        # Ordenar procesos por tiempo de llegada
+        
         procesos_ordenados = sorted(procesos, key=lambda x: x.instante_llegada)
         
         for proceso in procesos_ordenados:
-            # Esperar hasta que el proceso llegue
+           
             if self.tiempo_actual < proceso.instante_llegada:
                 self.tiempo_actual = proceso.instante_llegada
                 eventos.append({
@@ -71,7 +71,7 @@ class FCFS(AlgoritmoPlanificacion):
                     'evento': f"Proceso {proceso.nombre} llega al sistema"
                 })
             
-            # Tiempo de respuesta (primera vez que se ejecuta)
+            
             if not proceso.ejecutado:
                 proceso.tiempo_respuesta = self.tiempo_actual - proceso.instante_llegada
                 proceso.ejecutado = True
@@ -80,13 +80,13 @@ class FCFS(AlgoritmoPlanificacion):
                     'evento': f"Inicia ejecución de {proceso.nombre} (PID: {proceso.pid})"
                 })
             
-            # Ejecutar el proceso completo
+   
             inicio_ejecucion = self.tiempo_actual
             self.tiempo_actual += proceso.tiempo_cpu
             proceso.tiempo_restante = 0
             proceso.tiempo_finalizacion = self.tiempo_actual
             
-            # Calcular tiempo de espera
+          
             proceso.tiempo_espera = inicio_ejecucion - proceso.instante_llegada
             
             eventos.append({
@@ -110,11 +110,11 @@ class SJF(AlgoritmoPlanificacion):
         completados = []
         cola_espera = []
         
-        # Ordenar procesos por llegada inicialmente
+      
         procesos_restantes = sorted(procesos, key=lambda x: x.instante_llegada)
         
         while len(completados) < len(procesos):
-            # Agregar procesos que han llegado a la cola de espera
+           
             llegados = [p for p in procesos_restantes 
                        if p.instante_llegada <= self.tiempo_actual and p not in completados]
             
@@ -127,11 +127,11 @@ class SJF(AlgoritmoPlanificacion):
                     })
             
             if cola_espera:
-                # Seleccionar el proceso con menor tiempo de CPU
+            
                 cola_espera.sort(key=lambda x: x.tiempo_cpu)
                 proceso_actual = cola_espera.pop(0)
                 
-                # Tiempo de respuesta
+           
                 if not proceso_actual.ejecutado:
                     proceso_actual.tiempo_respuesta = self.tiempo_actual - proceso_actual.instante_llegada
                     proceso_actual.ejecutado = True
@@ -142,7 +142,7 @@ class SJF(AlgoritmoPlanificacion):
                     'evento': f"SJF selecciona {proceso_actual.nombre} (CPU: {proceso_actual.tiempo_cpu})"
                 })
                 
-                # Ejecutar proceso completo
+           
                 self.tiempo_actual += proceso_actual.tiempo_cpu
                 proceso_actual.tiempo_restante = 0
                 proceso_actual.tiempo_finalizacion = self.tiempo_actual
@@ -156,7 +156,7 @@ class SJF(AlgoritmoPlanificacion):
                 completados.append(proceso_actual)
                 procesos_restantes.remove(proceso_actual)
             else:
-                # No hay procesos listos, avanzar tiempo
+              
                 self.tiempo_actual += 1
                 eventos.append({
                     'tiempo': self.tiempo_actual,
@@ -177,7 +177,7 @@ class SRTF(AlgoritmoPlanificacion):
         self.tiempo_actual = 0
         eventos = []
         
-        # Inicializar procesos
+
         for p in procesos:
             p.tiempo_restante = p.tiempo_cpu
             p.ejecutado = False
@@ -187,7 +187,7 @@ class SRTF(AlgoritmoPlanificacion):
         tiempo_inicio_ejecucion = 0
         
         while len(completados) < len(procesos):
-            # Verificar si llegan nuevos procesos
+    
             nuevos = [p for p in procesos 
                      if p.instante_llegada == self.tiempo_actual and p not in completados]
             
@@ -197,21 +197,21 @@ class SRTF(AlgoritmoPlanificacion):
                     'evento': f"{p.nombre} llega al sistema"
                 })
             
-            # Obtener procesos listos para ejecutar
+           
             procesos_listos = [p for p in procesos 
                              if p.instante_llegada <= self.tiempo_actual 
                              and p.tiempo_restante > 0 
                              and p not in completados]
             
             if procesos_listos:
-                # Seleccionar proceso con menor tiempo restante
+               
                 procesos_listos.sort(key=lambda x: x.tiempo_restante)
                 nuevo_proceso = procesos_listos[0]
                 
-                # Verificar si hay cambio de proceso
+                
                 if proceso_actual != nuevo_proceso:
                     if proceso_actual is not None:
-                        # Registrar tiempo de ejecución del proceso anterior
+                       
                         tiempo_ejecutado = self.tiempo_actual - tiempo_inicio_ejecucion
                         proceso_actual.tiempo_restante -= tiempo_ejecutado
                         
@@ -235,11 +235,11 @@ class SRTF(AlgoritmoPlanificacion):
                         'evento': f"SRTF cambia a {proceso_actual.nombre} (Restante: {proceso_actual.tiempo_restante})"
                     })
                 
-                # Ejecutar una unidad de tiempo
+
                 self.tiempo_actual += 1
                 
             else:
-                # CPU idle
+        
                 proceso_actual = None
                 self.tiempo_actual += 1
                 eventos.append({
@@ -247,7 +247,7 @@ class SRTF(AlgoritmoPlanificacion):
                     'evento': "CPU idle"
                 })
         
-        # Calcular tiempos de espera
+
         for p in procesos:
             p.tiempo_espera = p.tiempo_finalizacion - p.instante_llegada - p.tiempo_cpu
         
@@ -266,21 +266,21 @@ class RoundRobin(AlgoritmoPlanificacion):
         self.tiempo_actual = 0
         eventos = []
         
-        # Inicializar procesos
+    
         for p in procesos:
             p.tiempo_restante = p.tiempo_cpu
             p.ejecutado = False
         
-        # Crear cola Round Robin
+     
         cola = []
         completados = []
         
-        # Ordenar procesos por llegada
+        
         procesos_por_llegada = sorted(procesos, key=lambda x: x.instante_llegada)
         indice_proximo = 0
         
         while len(completados) < len(procesos):
-            # Agregar procesos que han llegado
+          
             while (indice_proximo < len(procesos_por_llegada) and 
                    procesos_por_llegada[indice_proximo].instante_llegada <= self.tiempo_actual):
                 proceso = procesos_por_llegada[indice_proximo]
@@ -294,7 +294,7 @@ class RoundRobin(AlgoritmoPlanificacion):
             if cola:
                 proceso_actual = cola.pop(0)
                 
-                # Tiempo de respuesta si es primera ejecución
+                
                 if not proceso_actual.ejecutado:
                     proceso_actual.tiempo_respuesta = self.tiempo_actual - proceso_actual.instante_llegada
                     proceso_actual.ejecutado = True
@@ -303,7 +303,7 @@ class RoundRobin(AlgoritmoPlanificacion):
                         'evento': f"RR inicia {proceso_actual.nombre} (Quantum: {self.quantum})"
                     })
                 
-                # Ejecutar por quantum o hasta completar
+               
                 tiempo_ejecucion = min(self.quantum, proceso_actual.tiempo_restante)
                 inicio_bloque = self.tiempo_actual
                 
@@ -311,7 +311,7 @@ class RoundRobin(AlgoritmoPlanificacion):
                     self.tiempo_actual += 1
                     proceso_actual.tiempo_restante -= 1
                     
-                    # Verificar si llegan nuevos procesos durante la ejecución
+                  
                     while (indice_proximo < len(procesos_por_llegada) and 
                            procesos_por_llegada[indice_proximo].instante_llegada <= self.tiempo_actual):
                         nuevo = procesos_por_llegada[indice_proximo]
@@ -323,14 +323,14 @@ class RoundRobin(AlgoritmoPlanificacion):
                         indice_proximo += 1
                 
                 if proceso_actual.tiempo_restante > 0:
-                    # El proceso no ha terminado, volver a la cola
+                 
                     cola.append(proceso_actual)
                     eventos.append({
                         'tiempo': self.tiempo_actual,
                         'evento': f"{proceso_actual.nombre} vuelve a cola ({proceso_actual.tiempo_restante} restante)"
                     })
                 else:
-                    # Proceso completado
+                   
                     proceso_actual.tiempo_finalizacion = self.tiempo_actual
                     completados.append(proceso_actual)
                     proceso_actual.tiempo_espera = (proceso_actual.tiempo_finalizacion - 
@@ -341,7 +341,7 @@ class RoundRobin(AlgoritmoPlanificacion):
                         'evento': f"✅ {proceso_actual.nombre} completado | Espera: {proceso_actual.tiempo_espera}"
                     })
             else:
-                # CPU idle
+            
                 self.tiempo_actual += 1
                 eventos.append({
                     'tiempo': self.tiempo_actual,
@@ -361,8 +361,7 @@ class Prioridades(AlgoritmoPlanificacion):
     
     def ejecutar(self, procesos: List[Proceso]) -> List[Dict]:
         """Ejecuta planificación por prioridades"""
-        # Para simplificar, asumimos que cada proceso tiene un atributo 'prioridad'
-        # Si no existe, usamos tiempo de CPU como prioridad (menor CPU = mayor prioridad)
+   
         
         eventos = [{
             'tiempo': 0,
@@ -372,7 +371,7 @@ class Prioridades(AlgoritmoPlanificacion):
         self.metricas = self.calcular_metricas(procesos)
         return eventos
 
-# Fábrica de algoritmos
+
 class FabricaAlgoritmos:
     """Fábrica para crear instancias de algoritmos"""
     
@@ -413,7 +412,7 @@ class FabricaAlgoritmos:
         }
         return descripciones.get(algoritmo, "Descripción no disponible")
 
-# Función de utilidad para análisis comparativo
+
 def analizar_comparativo(procesos: List[Proceso]) -> Dict:
     """Ejecuta todos los algoritmos y compara métricas"""
     resultados = {}
@@ -421,7 +420,6 @@ def analizar_comparativo(procesos: List[Proceso]) -> Dict:
     
     for nombre_algoritmo in fabrica.obtener_algoritmos_disponibles():
         try:
-            # Crear copia de procesos para cada algoritmo
             procesos_copia = []
             for p in procesos:
                 nuevo_proceso = Proceso(p.nombre, p.tiempo_cpu, p.instante_llegada, p.quantum)
@@ -446,14 +444,14 @@ def analizar_comparativo(procesos: List[Proceso]) -> Dict:
     return resultados
 
 if __name__ == "__main__":
-    # Ejemplo de uso
+   
     procesos_ejemplo = [
         Proceso("P1", 5, 0),
         Proceso("P2", 3, 1),
         Proceso("P3", 8, 2)
     ]
     
-    # Probar FCFS
+ 
     fcfs = FCFS()
     eventos = fcfs.ejecutar(procesos_ejemplo)
     
@@ -462,4 +460,5 @@ if __name__ == "__main__":
         print(f"T{evento['tiempo']}: {evento['evento']}")
     
     print("\nMétricas:", fcfs.metricas)
+
 
