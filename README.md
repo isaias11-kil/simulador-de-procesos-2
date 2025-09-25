@@ -74,11 +74,12 @@ python main.py
 
 3. **Agrega procesos**  
    Completa los campos y presiona "Agregar Proceso". Los procesos aparecerán en la tabla.
-   <img width="626" height="503" alt="image" src="https://github.com/user-attachments/assets/f54bde7d-7ac8-4383-8710-7fbfef00d01b" />
+   
+   <img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/f54bde7d-7ac8-4383-8710-7fbfef00d01b" />
 
-   <img width="591" height="418" alt="image" src="https://github.com/user-attachments/assets/b832f66b-609f-4b9b-8ad2-3eb19752fe4a" />
+   <img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/b832f66b-609f-4b9b-8ad2-3eb19752fe4a" />
 
-   <img width="628" height="505" alt="image" src="https://github.com/user-attachments/assets/0820ed4c-e56d-44a3-aaf4-29315d99cb26" />
+   <img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/0820ed4c-e56d-44a3-aaf4-29315d99cb26" />
 
 
 
