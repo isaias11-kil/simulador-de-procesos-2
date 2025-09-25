@@ -74,14 +74,22 @@ python main.py
 
 3. **Agrega procesos**  
    Completa los campos y presiona "Agregar Proceso". Los procesos aparecerán en la tabla.
+   <img width="626" height="503" alt="image" src="https://github.com/user-attachments/assets/f54bde7d-7ac8-4383-8710-7fbfef00d01b" />
 
-4. **Selecciona el algoritmo**  
+   <img width="591" height="418" alt="image" src="https://github.com/user-attachments/assets/b832f66b-609f-4b9b-8ad2-3eb19752fe4a" />
+
+   <img width="628" height="505" alt="image" src="https://github.com/user-attachments/assets/0820ed4c-e56d-44a3-aaf4-29315d99cb26" />
+
+
+
+
+5. **Selecciona el algoritmo**  
    Elige el algoritmo de planificación en el menú desplegable.
 
-5. **Inicia la simulación**  
+6. **Inicia la simulación**  
    Presiona "🎯 Iniciar Simulación". Observa la ejecución y el historial en tiempo real.
 
-6. **Exporta resultados o historial**  
+7. **Exporta resultados o historial**  
    Usa los botones correspondientes para guardar la información en archivos de texto.
 
 ---
