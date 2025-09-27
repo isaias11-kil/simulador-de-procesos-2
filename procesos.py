@@ -3,17 +3,16 @@ class Proceso:
     _ultimo_pid = 0 
 
     def __init__(self, nombre, tiempo_cpu, instante_llegada, quantum=None):
-       
+   
         Proceso._ultimo_pid += 1
         self.pid = Proceso._ultimo_pid
         
-     
+
         self.nombre = nombre
         self.tiempo_cpu = tiempo_cpu
         self.instante_llegada = instante_llegada
         self.quantum = quantum
 
-       
         self.tiempo_restante = tiempo_cpu
         self.tiempo_finalizacion = None
         self.tiempo_espera = 0
@@ -36,5 +35,3 @@ def crear_proceso(nombre, tiempo_cpu, instante_llegada, quantum=None):
         raise ValueError("El quantum debe ser un entero positivo (si aplica).")
     
     return Proceso(nombre, tiempo_cpu, instante_llegada, quantum)
-
-
