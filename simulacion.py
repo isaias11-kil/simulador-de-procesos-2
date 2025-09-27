@@ -58,19 +58,19 @@ class MotorSimulacion:
             if not self.simulacion_activa:
                 break
 
-            
+            # Esperar hasta el tiempo de llegada
             if tiempo_actual < proceso.instante_llegada:
                 self.mostrar(f"⏳ T{tiempo_actual}: Esperando llegada de procesos...")
                 tiempo_actual = proceso.instante_llegada
 
-            
+            # Marcar tiempo de respuesta si es la primera ejecución
             if not proceso.ejecutado:
                 proceso.tiempo_respuesta = tiempo_actual - proceso.instante_llegada
                 proceso.ejecutado = True
 
             self.mostrar(f"🚀 T{tiempo_actual}: Ejecutando {proceso.nombre} (PID: {proceso.pid})")
 
-           
+            # Ejecutar el proceso completo
             for i in range(proceso.tiempo_restante):
                 if not self.simulacion_activa:
                     break
@@ -102,11 +102,11 @@ class MotorSimulacion:
         while cola and self.simulacion_activa:
             proceso = cola.popleft()
             
-           
+            # Esperar si el proceso aún no ha llegado
             if tiempo_actual < proceso.instante_llegada:
                 tiempo_actual = proceso.instante_llegada
 
-           
+            # Marcar tiempo de respuesta si es la primera ejecución
             if not proceso.ejecutado:
                 proceso.tiempo_respuesta = tiempo_actual - proceso.instante_llegada
                 proceso.ejecutado = True
@@ -154,13 +154,10 @@ def ejecutar_simulacion(procesos, algoritmo, text_widget):
     """
     motor = MotorSimulacion(text_widget)
 
-    
+    # Los procesos ya son objetos Proceso, agregarlos directamente
     for proceso in procesos:
         motor.agregar_proceso(proceso)
 
     thread = Thread(target=motor.iniciar, args=(algoritmo,))
     thread.daemon = True
     thread.start()
-
-
-
