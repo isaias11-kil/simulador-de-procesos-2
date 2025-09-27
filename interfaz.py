@@ -7,26 +7,26 @@ class InterfazSimulador(ttk.Frame):
         super().__init__(parent)
         self.simulacion_callback = simulacion_callback
 
-
+  
         self.procesos = []
         self.pid_counter = 1
 
         self.crear_widgets()
 
     def crear_widgets(self):
-
+      
         main_frame = ttk.Frame(self)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-    
+      
         left_frame = ttk.Frame(main_frame)
         left_frame.pack(side="left", fill="both", expand=True, padx=(0, 10))
 
-       
+  
         frame_form = ttk.LabelFrame(left_frame, text="Crear Proceso")
         frame_form.pack(fill="x", padx=5, pady=5)
 
-  
+
         ttk.Label(frame_form, text="Nombre:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
         self.entry_nombre = ttk.Entry(frame_form, width=15)
         self.entry_nombre.grid(row=0, column=1, padx=5, pady=5)
@@ -35,7 +35,7 @@ class InterfazSimulador(ttk.Frame):
         self.entry_tiempo = ttk.Entry(frame_form, width=10)
         self.entry_tiempo.grid(row=0, column=3, padx=5, pady=5)
 
-      
+     
         ttk.Label(frame_form, text="Instante de Llegada:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
         self.entry_llegada = ttk.Entry(frame_form, width=10)
         self.entry_llegada.grid(row=1, column=1, padx=5, pady=5)
@@ -44,7 +44,7 @@ class InterfazSimulador(ttk.Frame):
         self.entry_quantum = ttk.Entry(frame_form, width=10)
         self.entry_quantum.grid(row=1, column=3, padx=5, pady=5)
 
- 
+      
         button_frame = ttk.Frame(frame_form)
         button_frame.grid(row=2, column=0, columnspan=4, pady=10)
         
@@ -52,63 +52,60 @@ class InterfazSimulador(ttk.Frame):
         ttk.Button(button_frame, text="Limpiar Campos", command=self.limpiar_campos).pack(side="left", padx=5)
         ttk.Button(button_frame, text="Eliminar Seleccionado", command=self.eliminar_proceso).pack(side="left", padx=5)
 
-        
+
         frame_tabla = ttk.LabelFrame(left_frame, text=f"Cola de Procesos (0 procesos)")
         frame_tabla.pack(fill="both", expand=True, padx=5, pady=5)
 
-        
+      
         table_container = ttk.Frame(frame_tabla)
         table_container.pack(fill="both", expand=True)
 
         columnas = ("PID", "Nombre", "CPU", "Llegada", "Quantum")
         self.tabla = ttk.Treeview(table_container, columns=columnas, show="headings", height=10)
 
-       
         column_widths = {"PID": 60, "Nombre": 100, "CPU": 80, "Llegada": 100, "Quantum": 80}
         for col in columnas:
             self.tabla.heading(col, text=col)
             self.tabla.column(col, width=column_widths[col], anchor="center")
 
-       
+
         scrollbar_tabla = ttk.Scrollbar(table_container, orient="vertical", command=self.tabla.yview)
         self.tabla.configure(yscrollcommand=scrollbar_tabla.set)
         
         self.tabla.pack(side="left", fill="both", expand=True)
         scrollbar_tabla.pack(side="right", fill="y")
 
-       
+
         right_frame = ttk.Frame(main_frame)
         right_frame.pack(side="right", fill="both", expand=True)
 
-        
         frame_algo = ttk.LabelFrame(right_frame, text="Configuración de Simulación")
         frame_algo.pack(fill="x", padx=5, pady=5)
 
         ttk.Label(frame_algo, text="Algoritmo de Planificación:").pack(anchor="w", padx=5, pady=2)
         self.algoritmo = tk.StringVar(value="FCFS")
-        opciones = ["FCFS", "SJF", "SRTF", "Round Robin"]
+        opciones = ["FCFS", "SJF", "SRTF", "Round Robin", "Prioridades"]
         self.combo_algoritmo = ttk.Combobox(frame_algo, textvariable=self.algoritmo, values=opciones, state="readonly")
         self.combo_algoritmo.pack(fill="x", padx=5, pady=5)
 
-       
+    
         stats_frame = ttk.Frame(frame_algo)
         stats_frame.pack(fill="x", padx=5, pady=5)
         
         self.label_stats = ttk.Label(stats_frame, text="Procesos: 0 | Tiempo total: 0")
         self.label_stats.pack(anchor="w")
 
-        
+
         ttk.Button(frame_algo, text="🎯 Iniciar Simulación", command=self.iniciar_simulacion).pack(fill="x", padx=5, pady=10)
 
-        
+        # ---- Área de simulación mejorada ----
         frame_sim = ttk.LabelFrame(right_frame, text="Resultados de la Simulación")
         frame_sim.pack(fill="both", expand=True, padx=5, pady=5)
-
 
         self.texto_simulacion = scrolledtext.ScrolledText(frame_sim, height=20, wrap=tk.WORD, font=("Consolas", 10))
         self.texto_simulacion.pack(fill="both", expand=True, padx=5, pady=5)
 
- 
+
         text_controls = ttk.Frame(frame_sim)
         text_controls.pack(fill="x", padx=5, pady=5)
         
@@ -121,7 +118,7 @@ class InterfazSimulador(ttk.Frame):
         tiempo_total = sum(p["CPU"] for p in self.procesos)
         self.label_stats.config(text=f"Procesos: {total_procesos} | Tiempo total: {tiempo_total}")
         
-  
+ 
         for widget in self.winfo_children():
             if isinstance(widget, ttk.LabelFrame) and "Cola de Procesos" in widget.cget("text"):
                 widget.config(text=f"Cola de Procesos ({total_procesos} procesos)")
@@ -176,16 +173,15 @@ class InterfazSimulador(ttk.Frame):
             messagebox.showwarning("Advertencia", "Seleccione un proceso para eliminar.")
             return
 
-       
+        
         if messagebox.askyesno("Confirmar", "¿Está seguro de eliminar el proceso seleccionado?"):
             item = seleccionado[0]
             valores = self.tabla.item(item, "values")
             pid = int(valores[0])
             
-            
+       
             self.procesos = [p for p in self.procesos if p["PID"] != pid]
             
-        
             self.tabla.delete(item)
             self.actualizar_estadisticas()
 
@@ -230,7 +226,7 @@ class InterfazSimulador(ttk.Frame):
 
         algoritmo = self.algoritmo.get()
         
-      
+   
         if algoritmo == "Round Robin":
             procesos_sin_quantum = [p for p in self.procesos if p["Quantum"] is None]
             if procesos_sin_quantum:
@@ -240,10 +236,10 @@ class InterfazSimulador(ttk.Frame):
                     "Los procesos sin quantum usarán valor por defecto."
                 )
 
-     
+ 
         self.limpiar_resultados()
         
-      
+     
         self.simulacion_callback(self.procesos, algoritmo, self.texto_simulacion)
 
     def set_callback(self, nuevo_callback):
@@ -266,4 +262,3 @@ if __name__ == "__main__":
     
     app = InterfazSimulador(root, simulacion_dummy)
     root.mainloop()
-
