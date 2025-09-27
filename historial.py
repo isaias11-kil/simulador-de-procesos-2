@@ -1,4 +1,4 @@
-# historial.py
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
@@ -7,7 +7,7 @@ class HistorialUI(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-        self.contador_procesos = 0
+        self.contador_procesos = 0  
         self.crear_widgets()
     
     def crear_widgets(self):
@@ -36,20 +36,15 @@ class HistorialUI(ttk.Frame):
                   command=self.exportar_historial).pack(side="left", padx=2)
     
     def agregar_entrada(self, proceso_info):
-        """
-        Agrega una nueva entrada al historial de procesos.
-        proceso_info: str (puede ser el nombre, id, estado, etc. del proceso)
-        """
+        """Agrega una nueva entrada al historial de procesos ejecutados"""
         self.contador_procesos += 1
         timestamp = datetime.now().strftime("%H:%M:%S")
         entrada = f"{self.contador_procesos:02d}. [{timestamp}] {proceso_info}"
-        
         self.lista_historial.insert(tk.END, entrada)
-        self.lista_historial.see(tk.END)  
+        self.lista_historial.see(tk.END)
         self.actualizar_contador()
-    
+
     def limpiar_historial(self):
-        """Limpia todo el historial"""
         if self.lista_historial.size() > 0:
             if messagebox.askyesno("Confirmar", "¿Está seguro de limpiar el historial?"):
                 self.lista_historial.delete(0, tk.END)
@@ -57,7 +52,6 @@ class HistorialUI(ttk.Frame):
                 self.actualizar_contador()
     
     def exportar_historial(self):
-        """Exporta el historial a un archivo de texto"""
         if self.lista_historial.size() == 0:
             messagebox.showwarning("Advertencia", "El historial está vacío.")
             return
@@ -83,5 +77,4 @@ class HistorialUI(ttk.Frame):
             messagebox.showerror("Error", f"No se pudo exportar el historial:\n{str(e)}")
     
     def actualizar_contador(self):
-        """Actualiza el contador de procesos ejecutados"""
         self.label_contador.config(text=f"Procesos ejecutados: {self.contador_procesos}")
