@@ -36,7 +36,7 @@ Este proyecto es un simulador visual de algoritmos de planificación de procesos
 
 ```sh
 git clone <URL_DEL_REPOSITORIO>
-cd simulador-de-procesos-2-main
+cd simulador-de-procesos-2
 python main.py
 ```
 
@@ -93,7 +93,10 @@ python main.py
 7. **Inicia la simulación**  
    Presiona "🎯 Iniciar Simulación". Observa la ejecución y el historial en tiempo real.
 
-8. **Exporta resultados o historial**  
+   <img width="400" height="500" alt="image" src="https://github.com/user-attachments/assets/f86a4378-03e2-4b4d-872b-d714b0e72e4f" />
+
+
+9. **Exporta resultados o historial**  
    Usa los botones correspondientes para guardar la información en archivos de texto.
 
 ---
